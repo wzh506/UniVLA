@@ -120,7 +120,8 @@ conda activate univla
 ```bash
 # Install pytorch
 # Look up https://pytorch.org/get-started/previous-versions/ with your cuda version for a correct command
-pip install torch torchvision torchaudio
+# Our experiments are conducted with 'torch 2.2.0 + cuda 12.1'
+pip install torch torchvision
 
 # Clone our repo and pip install to download dependencies
 git clone git@github.com:OpenDriveLab/UniVLA.git

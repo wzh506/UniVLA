@@ -2,7 +2,7 @@ absl_py==2.1.0
 accelerate==0.32.1
 Calvin.egg==info
 calvin_env==0.0.1
-dlimp==0.0.1
+git+https://github.com/moojink/dlimp_openvla
 draccus==0.8.0
 einops==0.8.1
 ema_pytorch==0.5.1
@@ -15,11 +15,11 @@ jsonlines==4.0.0
 lightning==2.4.0
 matplotlib==3.10.1
 moviepy==1.0.3
-numpy==2.2.5
+numpy==1.26.4
 omegaconf==2.3.0
 opencv_python==4.10.0.84
 openvla==0.0.3
-packaging==25.0
+packaging==24.1
 peft==0.11.1
 Pillow==11.2.1
 piq==0.8.0
@@ -37,7 +37,7 @@ tensorflow_datasets==4.9.3
 tensorflow_graphics==2021.12.3
 termcolor==3.0.1
 timm==0.9.10
-tokenizers==0.21.1
+tokenizers==0.19.1
 torch==2.2.0
 torchvision==0.17.0
 tqdm==4.66.4

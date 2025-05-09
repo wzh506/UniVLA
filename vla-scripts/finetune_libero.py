@@ -81,7 +81,6 @@ class Wrapped_Model(torch.nn.Module):
         return slow_output, loss, loss_one_step, latent_action_tokens
 
     def action_decoder_forward(self, batch, slow_output):
-        # Task and action latents
         visual_embed = slow_output.hidden_states[-1][:, : self.vla.vision_backbone.featurizer.patch_embed.num_patches ].to(torch.float)
         latent_tokens = slow_output.hidden_states[-1][:, self.vla.vision_backbone.featurizer.patch_embed.num_patches : ]
         action_gt = batch["labels"].to(latent_tokens.device)
@@ -241,7 +240,7 @@ def finetune(cfg: FinetuneConfig) -> None:
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size = int(cfg.max_steps * 0.8), gamma=0.1)
 
         
-    from latent_action_model.genie.modules.lam import LatentActionModel, DINOLatentActionModel, ControllableDINOLatentActionModel
+    from latent_action_model.genie.modules.lam import ControllableDINOLatentActionModel
 
     latent_action_model = ControllableDINOLatentActionModel(
         in_dim=3,

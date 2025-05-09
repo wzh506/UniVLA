@@ -30,7 +30,7 @@ classifiers = [
 dependencies = [
     "absl_py==2.1.0",
     "accelerate==0.32.1",
-    "dlimp==0.0.1",
+    "dlimp @ git+https://github.com/moojink/dlimp_openvla",
     "draccus==0.8.0",
     "einops==0.8.1",
     "ema_pytorch==0.5.1",
@@ -43,10 +43,10 @@ dependencies = [
     "lightning==2.4.0",
     "matplotlib==3.10.1",
     "moviepy==1.0.3",
-    "numpy==2.2.5",
+    "numpy==1.26.4",
     "omegaconf==2.3.0",
     "opencv_python==4.10.0.84",
-    "packaging==25.0",
+    "packaging==24.1",
     "peft==0.11.1",
     "Pillow==11.2.1",
     "piq==0.8.0",
@@ -63,7 +63,7 @@ dependencies = [
     "tensorflow_graphics==2021.12.3",
     "termcolor==3.0.1",
     "timm==0.9.10",
-    "tokenizers==0.21.1",
+    "tokenizers==0.19.1",
     "tqdm==4.66.4",
     "transformers==4.40.1"
 ]

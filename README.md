@@ -199,8 +199,10 @@ torchrun --nproc_per_node ${GPUS_PER_NODE} --nnodes ${NNODES} --node_rank ${RANK
 > Please first download the [LIBERO datasets](https://huggingface.co/datasets/openvla/modified_libero_rlds/tree/main) that we used in experiments
 
 Start training with ```torchrun```:
-- You can choose ```dataset_name``` from ```libero_spatial_no_noops```, ```libero_object_no_noops```, ```libero_goal_no_noops```, and ```libero_10_no_noops```
-- We trained on *'Spatial'*, *'Object'* and *'Goal'* for 30k steps and *'Long'* for 40k steps. Please first modify the ```max_steps``` in training config accordingly for reproduction.
+1) You should first set the pretrained UniVLA and latent action model path in ```vla_path``` and ```lam_path``` of the [training config](https://github.com/OpenDriveLab/UniVLA/blob/b502b3eddc05fef9984d34932a41c96e5a9f21a3/vla-scripts/finetune_libero.py#L107).
+2) Set your local LIBERO dataset path in [```data_root_dir```](https://github.com/OpenDriveLab/UniVLA/blob/b502b3eddc05fef9984d34932a41c96e5a9f21a3/vla-scripts/finetune_libero.py#L110).
+3) You can choose ```dataset_name``` from ```libero_spatial_no_noops```, ```libero_object_no_noops```, ```libero_goal_no_noops```, and ```libero_10_no_noops```
+> We trained on *'Spatial'*, *'Object'* and *'Goal'* for 30k steps and *'Long'* for 40k steps. Please first modify the ```max_steps``` in training config accordingly for reproduction.
 
 ```bash
 # Start training on LIBERO-10(long) with 8 GPUs

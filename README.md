@@ -12,7 +12,7 @@ This is the official implementation of our RSS 2025 paper: \
 </div>
 
 > We introduce UniVLA, a unified vision-language-action framework that enables policy learning across different environments. By deriving task-centric latent actions in an unsupervised manner, UniVLA can leverage data from arbitrary embodiments and perspectives without action labels. After large-scale pretraining from videos, UniVLA develops a cross-embodiment generalist policy that can be readily deployed across various robots by learning an action decoding with minimal cost. Compared to OpenVLA, UniVLA exhibits unanimous improvement on multiple manipulation and navigation tasks.
-> #### :page_facing_up: [Paper](https://www.roboticsproceedings.org/rss21/p014.pdf) | :rocket: [Demo Page (Coming Soon)]()
+> #### :page_facing_up: [Paper](https://arxiv.org/pdf/2505.06111) | :rocket: [Demo Page (Coming Soon)]()
 > :black_nib: Qingwen Bu, Yanting Yang, Jisong Cai, S. Gao, G. Ren, M. Yao, P. Luo, H. Li \
 > :e-mail: Primary Contact: Qingwen Bu (buqingwen@opendrivelab.com)
 
@@ -403,13 +403,13 @@ python experiments/robot/libero/run_libero_eval_decoder.py \
 </div>
 
 ## :pencil: Citation
-If you find our code or models useful in your work, please cite [our paper]():
+If you find our code or models useful in your work, please cite [our paper](https://arxiv.org/pdf/2505.06111):
 
 ```bibtex
 @article{bu2025univla,
   title={UniVLA: Learning to Act Anywhere with Task-centric Latent Actions}, 
   author={Qingwen Bu and Yanting Yang and Jisong Cai and Shenyuan Gao and Guanghui Ren and Maoqing Yao and Ping Luo and Hongyang Li},
-  journal={arXiv preprint arXiv:2505.xxxxx},
+  journal={arXiv preprint arXiv:2505.06111},
   year={2025}
 }
 ```

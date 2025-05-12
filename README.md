@@ -22,6 +22,31 @@ This is the official implementation of our RSS 2025 paper: \
 - A VLA that achieves state-of-the-art results on multiple benchmarks with compute-efficient training.
 
 
+## :movie_camera: Demo
+Real-world robot experiments.
+
+
+<table style="width:100%;border-collapse:collapse;">
+<tr>
+  <td style="text-align:center;"><b>Store the screwdriver (1x speed)</b></td>
+  <td style="text-align:center;"><b>Clean the cutting board (1x speed)</b></td>
+  <td style="text-align:center;"><b>Fold towel twice (1x speed)</b></td>
+</tr>
+<tr>
+  <td><video src="https://github.com/user-attachments/assets/b11b4e83-24d8-4b55-b50e-f8271249422c" style="object-fit:cover;" autoplay loop muted></video></td>
+  <td><video src="https://github.com/user-attachments/assets/bafb5bac-8c8e-41d4-89d0-ec774b9b6e1c" style="object-fit:cover;" autoplay loop muted></video></td>
+  <td><video src="https://github.com/user-attachments/assets/6779e0e4-aa6e-4c16-adb9-30dedfd4db85" style="object-fit:cover;" autoplay loop muted></video></td>
+</tr>
+<tr>
+
+  <td style="text-align:center;"><b>Stack the tower of hanoi (1x speed)</b></td>
+</tr>
+<tr>
+  <td><video src="https://github.com/user-attachments/assets/61f663da-18df-4892-ae8f-5e03aac7469e" style="object-fit:cover;" autoplay loop muted></video></td>
+  <td><video src="https://github.com/user-attachments/assets/da7d7d4e-0634-42d7-8e88-8bb269965b1a" style="object-fit:cover;" autoplay loop muted></video></td>
+  <td><video src="https://github.com/user-attachments/assets/cb3afa9a-ffeb-4879-b915-1803d7ff8262" style="object-fit:cover;" autoplay loop muted></video></td>
+</tr>
+</table>
 
 
 

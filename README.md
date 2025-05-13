@@ -78,7 +78,7 @@ Real-world robot experiments.
   -  [ ] **3) CALVIN**
   -  [ ] **4) SimplerEnv**
 #### 3. :dizzy: Codes and Guidelines for Real-world Deployment
-  -  [ ] Codes and Docs
+  -  [x] Codes and Docs
 #### 4. :information_desk_person: Scripts for Pre-processing Human Dataset
   -  [ ] Codes for converting Ego4D into RLDS format
 

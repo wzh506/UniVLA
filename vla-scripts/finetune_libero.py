@@ -40,8 +40,8 @@ from prismatic.models.policy.transformer_utils import MAPBlock
 class ActionDecoder(torch.nn.Module):
     def __init__(self, window_size = 12, hidden_dim = 512):
         super().__init__()
-        self.latent_action_pool = MAPBlock(n_latents = 1, vis_dim = 4096, embed_dim = hidden_dim, n_heads = 8)
-        self.visual_pool = MAPBlock(n_latents = 1, vis_dim = 4096, embed_dim = hidden_dim, n_heads = 8)
+        self.latent_action_pool = MAPBlock(n_latents = 1, vis_dim = 4096, embed_dim = hidden_dim, n_heads = hidden_dim // 64)
+        self.visual_pool = MAPBlock(n_latents = 1, vis_dim = 4096, embed_dim = hidden_dim, n_heads = hidden_dim // 64)
 
         self.proj = nn.Sequential(
                                 nn.Linear(hidden_dim, 7 * window_size),
@@ -104,7 +104,7 @@ class Wrapped_Model(torch.nn.Module):
 @dataclass
 class FinetuneConfig:
     # fmt: off
-    vla_path: str = "/path/to/your/latent-action-pretrained-ckpt"                             # Path to OpenVLA model (on HuggingFace Hub)
+    vla_path: str = "/path/to/your/pretrained-univla-7b"            # Path to your local UniVLA path
     lam_path: str = "latent_action_model/logs/task_centric_lam_stage2/epoch=0-step=200000.ckpt"
     # Directory Paths
     data_root_dir: Path = Path("/LIBERO/modified_libero_rlds")      # Path to Open-X dataset directory

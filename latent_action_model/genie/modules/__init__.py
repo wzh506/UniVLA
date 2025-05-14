@@ -1,1 +1,1 @@
-from latent_action_model.genie.modules.lam import LatentActionModel, ControlAwareLatentActionModel, LatentActionModel_MultiView, DINOLatentActionModel, UncontrolledDINOLatentActionModel, ControllableDINOLatentActionModel
+from latent_action_model.genie.modules.lam import UncontrolledDINOLatentActionModel, ControllableDINOLatentActionModel

@@ -21,7 +21,23 @@ This is the official implementation of our RSS 2025 paper: \
 - A novel approach for extracting task-centric latent actions from cross-embodiment videos.
 - A VLA that achieves state-of-the-art results on multiple benchmarks with compute-efficient training.
 
+## Table of Contents
+- [:movie_camera: Demo](#movie_camera-demo)
+- [:loudspeaker: News](#loudspeaker-news)
+- [:pushpin: TODO List](#pushpin-todo-list)
+- [🤗 Model Zoo](#ckpts)
+- [:video_game: Getting Started](#installation)
+- [:fire: Training Recipe](#fire-training-recipe)
+  - [Task-centric Latent Action Learning](#one-task-centric-latent-action-learning)
+  - [Pretraining of Generalist Policy](#two-pretraining-of-generalist-policy)
+  - [Post-training for Deployment & Evaluations](#three-post-training-for-deployment--evaluations)
+    - [Real-world Experiment](#mechanical_arm-real-world-experiment)
+    - [LIBERO Benchmark](#1-libero)
+- [:rocket: UniVLA's Performance](#rocket-univlas-performance)
+- [:pencil: Citation](#pencil-citation)
 
+
+  
 ## :movie_camera: Demo
 Real-world robot experiments.
 
@@ -83,7 +99,7 @@ Real-world robot experiments.
   -  [ ] Codes for converting Ego4D into RLDS format
 
 
-## 🤗 Model Zoo
+## 🤗 Model Zoo <a name="ckpts"></a>
 
 <table>
   <tr>
@@ -219,7 +235,11 @@ torchrun --nproc_per_node ${GPUS_PER_NODE} --nnodes ${NNODES} --node_rank ${RANK
 - With the pretrained generalist policy trained to plan over an embodiment-agnostic action space, we then add embodiment-specific action decoder heads for downstream deployment.
 - Our action decoder is extremely lightwight with only around 12M parameters. Using parameter efficient fine-tuning with LoRA rank 32, the total trainable parameter is around 123M.
 
+#### :mechanical_arm: Real-world Experiment
 
+> Our guidelines are based on real-device testing conducted on the AgiLex platform. If you have code deployed on other platforms or in different data formats, we welcome pull requests!
+
+We provide a simple [guideline](https://github.com/OpenDriveLab/UniVLA/blob/6da4dcd36f5f5df0c490e13c6029af6c8d5258e9/docs/real-world-deployment.md) to deploy UniVLA on your customized setups.
 
 #### 1) LIBERO
 > Please first download the [LIBERO datasets](https://huggingface.co/datasets/openvla/modified_libero_rlds/tree/main) that we used in experiments
@@ -239,8 +259,12 @@ torchrun --standalone --nnodes 1 --nproc-per-node 8 finetune_libero.py \
 
 Once you finished training and get the action decoder and VLA backbone, you can simply start evaluation with:
 
+
 ```bash
 # Start evaluation on LIBERO-10
+# [Optinal] Install LIBERO dependencies
+pip install -r experiments/robot/libero/libero_requirements.txt
+
 # By default, we test for 50 rollouts every task, totalling 500 independent trials.
 python experiments/robot/libero/run_libero_eval_decoder.py \
     --task_suite_name libero_10    # Choose from [libero_spatial, libero_object, libero_goal, libero_10] \

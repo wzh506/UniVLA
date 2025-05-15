@@ -262,7 +262,7 @@ Once you finished training and get the action decoder and VLA backbone, you can 
 
 ```bash
 # Start evaluation on LIBERO-10
-# [Optinal] Install LIBERO dependencies
+# [Optional] Install LIBERO dependencies
 pip install -r experiments/robot/libero/libero_requirements.txt
 
 # By default, we test for 50 rollouts every task, totalling 500 independent trials.

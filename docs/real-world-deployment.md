@@ -4,9 +4,12 @@
 
 #### Data Pre-processing
 
+
+> [!TIP]
+>  If your datasets are in LeRobot format, you can convert them using the LeRobot2RLDS tool from [Any4Lerobot](https://github.com/Tavish9/any4lerobot). After conversion, you can load the data using the same pipeline we employed for LIBERO training.
+
 - Here we provide a script to process hdf5 files from an Agilex arm: ```/prismatic/vla/datasets/real_world_dataset.py```
 - The data is structured as follows:
-
 
 ```
 ├── action

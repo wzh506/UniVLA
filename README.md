@@ -81,8 +81,8 @@ Real-world robot experiments.
   -  [x] 1) Latent action model
   -  [x] 2) Pre-trained Models
       - [x] *Full (Manip. + Navi. + Human)*
-      - [ ] *BridgeV2-Only*
-      - [ ] *Human-Only*
+      - [x] *BridgeV2-Only*
+      - [x] *Human-Only*
   -  [x] 3) Downstream Fine-tuned Models
       - [x] *LIBERO*
       - [ ] *Room2Room*
@@ -126,7 +126,7 @@ Real-world robot experiments.
     <td><a href="https://huggingface.co/qwbu/univla-7b">univla-7b</a></td>
     <td>UniVLA pretrained on our full data collection (Manip. + Navi. + Human). </td>
   </tr>
-<!--   <tr>
+  <tr>
     <td>univla-7b-bridge-pt</td>
     <td><a href="https://huggingface.co/TRI-ML/prismatic-vlms/tree/main/prism-dinosiglip-224px%2B7b">TRI-ML/prismatic-vlms/prism-dinosiglip-224px+7b</a></td>
     <td><a href="https://huggingface.co/qwbu/univla-7b-bridge-pt">univla-7b-bridge-pt</a></td>
@@ -137,7 +137,7 @@ Real-world robot experiments.
     <td><a href="https://huggingface.co/TRI-ML/prismatic-vlms/tree/main/prism-dinosiglip-224px%2B7b">TRI-ML/prismatic-vlms/prism-dinosiglip-224px+7b</a></td>
     <td><a href="https://huggingface.co/qwbu/univla-7b-human-pt">univla-7b-human-pt</a></td>
     <td>UniVLA pretrained only on Ego4D human videos. </a></td>
-  </tr> -->
+  </tr>
   <tr>
     <td>univla-7b-224-sft-libero</td>
     <td><a href="https://huggingface.co/qwbu/univla-7b">univla-7b</a></td>

@@ -142,7 +142,16 @@ class ActionDecoder(nn.Module):
         pred_action = self.net(latent_actions.to(torch.float), visual_embed.to(torch.float)).reshape(-1, self.temporal_size, 7)
         pred_action = np.array(pred_action.tolist())
 
-        return pred_action[0]
+        # action de-normalization
+        pred_action = pred_action[0]
+        for i in range(pred_action.shape[0]):
+            pred_action[i] = np.where(
+            mask,
+            0.5 * (pred_action[i] + 1) * (action_high - action_low) + action_low,
+            pred_action[i],
+        )
+            
+        return pred_action
 
 
 

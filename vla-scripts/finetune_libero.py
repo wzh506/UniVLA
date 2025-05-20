@@ -78,11 +78,11 @@ class Wrapped_Model(torch.nn.Module):
             )
         loss, loss_one_step, latent_action_tokens = self.action_decoder_forward(batch, vla_output)
 
-        return slow_output, loss, loss_one_step, latent_action_tokens
+        return vla_output, loss, loss_one_step, latent_action_tokens
 
-    def action_decoder_forward(self, batch, slow_output):
-        visual_embed = slow_output.hidden_states[-1][:, : self.vla.vision_backbone.featurizer.patch_embed.num_patches ].to(torch.float)
-        latent_tokens = slow_output.hidden_states[-1][:, self.vla.vision_backbone.featurizer.patch_embed.num_patches : ]
+    def action_decoder_forward(self, batch, vla_output):
+        visual_embed = vla_output.hidden_states[-1][:, : self.vla.vision_backbone.featurizer.patch_embed.num_patches ].to(torch.float)
+        latent_tokens = vla_output.hidden_states[-1][:, self.vla.vision_backbone.featurizer.patch_embed.num_patches : ]
         action_gt = batch["labels"].to(latent_tokens.device)
         mask = action_gt > 32000
 

@@ -1,5 +1,6 @@
 absl_py==2.1.0
 accelerate==0.32.1
+braceexpand=0.1.7
 Calvin.egg==info
 calvin_env==0.0.1
 git+https://github.com/moojink/dlimp_openvla
@@ -42,3 +43,4 @@ torch==2.2.0
 torchvision==0.17.0
 tqdm==4.66.4
 transformers==4.40.1
+webdataset==0.2.111

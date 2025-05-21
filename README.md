@@ -209,7 +209,8 @@ torchrun --standalone --nnodes 1 --nproc-per-node 8 main.py fit \
 
 - **Latent Action Pseudo-Labeling for Policy Optimization:** The trained latent action model is employed to generate pseudo-labels for policy optimization via a next-token prediction objective. Specifically, the indices of inferred latent actions in the VQ-VAE codebook are mapped to dedicated tokens in the LLaMA tokenizer, denoted as ```{ACT_0, ACT_1, ..., ACT_C}```.
 
-- **Cost-effective Pre-Training:** Full-scale pre-training (combining OpenX and Ego4D datasets) was conducted on a 32-GPU A100 cluster for 20,000 optimization steps. In contrast, experiments on the 'Bridge' and 'Human' subsets required only 8 A100 GPUs, totaling 200 GPU-hours, significantly fewer computational resources than prior vision-language-action models.
+- **Cost-effective Pre-Training:** The full-scale pre-training procedure, incorporating both OpenX and Ego4D datasets, was performed using a 32-GPU A100 cluster over 20,000 optimization steps. This training regimen required approximately 960 A100 GPU-hours, representing just 5% of the computational resources utilized by OpenVLA. Furthermore, experiments conducted on the 'Bridge' and 'Human' subsets demanded only 200 GPU-hours, demonstrating substantially reduced computational requirements compared to previous vision-language-action models.
+
 
 - To initiate pre-training, please refer to the following scipt or simply run ```bash ./vla-scripts/train.sh```:
 
@@ -217,6 +218,7 @@ torchrun --standalone --nnodes 1 --nproc-per-node 8 main.py fit \
 > For pretraining UniVLA only on BridgeV2 or Human (Ego4D) data, please modify ```vla.type``` to ```prism-dinosiglip-224px+mx-bridge(human)``` correspondingly. Detailed setups can be found in ```./prismatic/conf/vla.py```.
 
 ```bash
+### Experiment on a 32-GPU cluster
 GPUS_PER_NODE=8  
 NNODES=4
 MASTER_PORT=${MASTER_PORT:-28596}
@@ -239,7 +241,7 @@ torchrun --nproc_per_node ${GPUS_PER_NODE} --nnodes ${NNODES} --node_rank ${RANK
 
 > Our guidelines are based on real-device testing conducted on the AgiLex platform. If you have code deployed on other platforms or in different data formats, we welcome pull requests!
 
-We provide a simple [guideline](https://github.com/OpenDriveLab/UniVLA/blob/6da4dcd36f5f5df0c490e13c6029af6c8d5258e9/docs/real-world-deployment.md) to deploy UniVLA on your customized setups.
+We provide a simple [guideline](https://github.com/OpenDriveLab/UniVLA/blob/3daa7e9a8f4ca92fdee960f8d6be73508344e81d/docs/real-world-deployment.md) to deploy UniVLA on your customized setups.
 
 #### 1) LIBERO
 > Please first download the [LIBERO datasets](https://huggingface.co/datasets/openvla/modified_libero_rlds/tree/main) that we used in experiments
@@ -266,11 +268,12 @@ Once you finished training and get the action decoder and VLA backbone, you can 
 pip install -r experiments/robot/libero/libero_requirements.txt
 
 # By default, we test for 50 rollouts every task, totalling 500 independent trials.
-python experiments/robot/libero/run_libero_eval_decoder.py \
-    --task_suite_name libero_10    # Choose from [libero_spatial, libero_object, libero_goal, libero_10] \
+python experiments/robot/libero/run_libero_eval.py \
+    --task_suite_name libero_10 \   # Choose from [libero_spatial, libero_object, libero_goal, libero_10] 
     --action_decoder_path /path/to/your/action_decoder_path.pt \
     --pretrained_checkpoint /path/to/your/libero_10_finetuned_univla \
     --save_video False    # Whether to save rollout videos \
+    --num_trials_per_task 50 \
     --seed 7
 ```
 

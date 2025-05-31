@@ -1,9 +1,5 @@
 # :earth_asia: UniVLA
-This is the official implementation of: \
-**Learning to Act Anywhere with Task-centric Latent Actions**
 
-
-### Overview
 
 <div id="top" align="center">
 <p align="center">
@@ -11,7 +7,6 @@ This is the official implementation of: \
 </p>
 </div>
 
-> We introduce UniVLA, a unified vision-language-action framework that enables policy learning across different environments. By deriving task-centric latent actions in an unsupervised manner, UniVLA can leverage data from arbitrary embodiments and perspectives without action labels. After large-scale pretraining from videos, UniVLA develops a cross-embodiment generalist policy that can be readily deployed across various robots by learning an action decoding with minimal cost. Compared to OpenVLA, UniVLA exhibits unanimous improvement on multiple manipulation and navigation tasks.
 > #### :page_facing_up: [Paper](https://arxiv.org/pdf/2505.06111) | :rocket: Demo Page (Coming Soon)
 > :black_nib: Qingwen Bu, Y. Yang, J. Cai, S. Gao, G. Ren, M. Yao, P. Luo, H. Li \
 > :e-mail: Primary Contact: Qingwen Bu (buqingwen@opendrivelab.com)

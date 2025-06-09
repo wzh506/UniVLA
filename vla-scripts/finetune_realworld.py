@@ -286,17 +286,14 @@ def finetune(cfg: FinetuneConfig) -> None:
         dataset_paths, [cfg.camera_names], cfg.batch_size, action_tokenizer, processor, window_size=cfg.window_size , min_window_size=cfg.window_size,
         max_window_size=cfg.window_size , image_transform = processor.image_processor.apply_transform)
 
-    # save stats
-    stats_path = os.path.join(cfg.data_root_dir, f'dataset_stats.pkl')
-    print(f'Saving stats into {stats_path}...')
-    with open(stats_path, 'wb') as f:
-        pickle.dump(stats, f)
-    # save key information
+    # save stats and key information
     stats_dir = os.path.join(cfg.data_root_dir, 'stats')
     if not os.path.isdir(stats_dir):
         os.makedirs(stats_dir)
-    key_info_path = os.path.join(stats_dir, f'key_info.pkl')
-    print(f'Saving key info into {key_info_path}...')
+    print(f'Saving stats into {stats_dir}...')
+    stats_path = os.path.join(stats_dir, f'dataset_stats.pkl')
+    with open(stats_path, 'wb') as f:
+        pickle.dump(stats, f)
 
     wrapped_model, latent_action_model, optimizer, scheduler, dataloader = accelerator.prepare(
         wrapped_model, latent_action_model, optimizer, scheduler, dataloader

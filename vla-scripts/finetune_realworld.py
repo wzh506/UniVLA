@@ -84,7 +84,7 @@ class Wrapped_Model(torch.nn.Module):
             )
         loss, loss_one_step, latent_action_tokens = self.action_decoder_forward(batch, vla_output)
 
-        return slow_output, loss, loss_one_step, latent_action_tokens
+        return vla_output, loss, loss_one_step, latent_action_tokens
 
     def action_decoder_forward(self, batch, slow_output):
         # Task and action latents
@@ -287,11 +287,14 @@ def finetune(cfg: FinetuneConfig) -> None:
         max_window_size=cfg.window_size , image_transform = processor.image_processor.apply_transform)
 
     # save stats
-    stats_path = os.path.join(cfg.data_root_dir, f'dataset_stats_lapa.pkl')# if stats_path == '' else stats_path
+    stats_path = os.path.join(cfg.data_root_dir, f'dataset_stats.pkl')
     print(f'Saving stats into {stats_path}...')
     with open(stats_path, 'wb') as f:
         pickle.dump(stats, f)
     # save key information
+    stats_dir = os.path.join(cfg.data_root_dir, 'stats')
+    if not os.path.isdir(stats_dir):
+        os.makedirs(stats_dir)
     key_info_path = os.path.join(stats_dir, f'key_info.pkl')
     print(f'Saving key info into {key_info_path}...')
 
@@ -532,9 +535,6 @@ def finetune(cfg: FinetuneConfig) -> None:
                                 # Prepare to save checkpoint in new directory
                                 checkpoint_dir = Path(str(run_dir) + "/{}".format(gradient_step_idx + current_step) + f"--{gradient_step_idx + current_step}_chkpt")
                                 os.makedirs(checkpoint_dir, exist_ok=True)
-
-                                # Save dataset statistics to new directory
-                                save_dataset_statistics(vla_dataset.dataset_statistics, checkpoint_dir)
 
                                 # Save processor and model weights to new directory
                                 processor.save_pretrained(checkpoint_dir)

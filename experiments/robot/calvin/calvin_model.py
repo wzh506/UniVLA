@@ -57,7 +57,7 @@ class ActionDecoderWrapper(nn.Module):
         self.action_buffer = np.zeros((self.temporal_mask.shape[0], self.temporal_mask.shape[0], 7))
         self.action_buffer_mask = np.zeros((self.temporal_mask.shape[0], self.temporal_mask.shape[0]), dtype=np.bool_)
 
-        # Action chunking with temporal aggregation
+        # [DEPRECATED] Action chunking with temporal aggregation
         balancing_factor = 0.01
         self.temporal_weights = np.array([np.exp(-1 * balancing_factor * i) for i in range(self.temporal_size)])[:, None]
 

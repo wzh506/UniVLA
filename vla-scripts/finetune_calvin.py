@@ -110,7 +110,7 @@ class Wrapped_Model(torch.nn.Module):
 @dataclass
 class FinetuneConfig:
     # fmt: off
-    vla_path: str = "/path/to/your/univla-7b"            # Path to your local UniVLA path
+    vla_path: str = "/path/to/your/univla-7b"                       # Path to your local UniVLA path
     lam_path: str = "/path/to/your/lam-stage-2.ckpt"
     # Directory Paths
     calvin_root: Path = Path("/calvin/dataset/task_ABC_D")          # Path to CALVIN directory
@@ -151,8 +151,8 @@ class FinetuneConfig:
                                                                     #   => CAUTION: Reduces memory but hurts performance
 
     # Tracking Parameters
-    wandb_project: str = "OmniEmbodiment-CALVIN"                      # Name of W&B project to log to (use default!)
-    wandb_entity: str = "opendrivelab-shear"                          # Name of entity to log under
+    wandb_project: str = "fientune-CALVIN"                          # Name of W&B project to log to (use default!)
+    wandb_entity: str = "opendrivelab"                              # Name of entity to log under
     run_id_note: Optional[str] = None                               # Extra note for logging, Weights & Biases
 
     # fmt: on

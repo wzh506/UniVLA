@@ -26,7 +26,7 @@ from prismatic.models.policy.transformer_utils import MAPBloc
 
 
 class ActionDecoder(torch.nn.Module):
-    def __init__(self, window_size = 5, hidden_dim=512):
+    def __init__(self, window_size=5, hidden_dim=512):
         super().__init__()
         self.latent_action_pool = MAPBlock(n_latents = 1, vis_dim = 4096, embed_dim = hidden_dim, n_heads = hidden_dim//64)
         self.visual_pool = MAPBlock(n_latents = 1, vis_dim = 4096, embed_dim = hidden_dim, n_heads = hidden_dim//64)
@@ -47,32 +47,21 @@ class ActionDecoder(torch.nn.Module):
 
 
 class ActionDecoderWrapper(nn.Module):
-    def __init__(self, window_size=5):
+    def __init__(self, window_size=12):
         super().__init__()
         self.net = ActionDecoder(window_size)
-
-        self.temporal_size = 12
-        self.temporal_mask = torch.flip(torch.triu(torch.ones(self.temporal_size, self.temporal_size, dtype=torch.bool)), dims=[1]).numpy()
-        
-        self.action_buffer = np.zeros((self.temporal_mask.shape[0], self.temporal_mask.shape[0], 7))
-        self.action_buffer_mask = np.zeros((self.temporal_mask.shape[0], self.temporal_mask.shape[0]), dtype=np.bool_)
-
-        # [DEPRECATED] Action chunking with temporal aggregation
-        balancing_factor = 0.01
-        self.temporal_weights = np.array([np.exp(-1 * balancing_factor * i) for i in range(self.temporal_size)])[:, None]
-
+        self.action_chunk_size = window_size
 
     def reset(self):
-        self.action_buffer = np.zeros((self.temporal_mask.shape[0], self.temporal_mask.shape[0], 7))
-        self.action_buffer_mask = np.zeros((self.temporal_mask.shape[0], self.temporal_mask.shape[0]), dtype=np.bool_)
+        pass
 
-    
     def forward(self, latent_actions, visual_embed):
         # Forward action decoder
-        pred_action = self.net(latent_actions.to(torch.float), visual_embed.to(torch.float)).reshape(-1, 12, 7)
+        pred_action = self.net(latent_actions.to(torch.float), 
+                               visual_embed.to(torch.float)).reshape(-1, self.action_chunk_size, 7)
         pred_action = np.array(pred_action.tolist())[0]
 
-        return pred_action[0]
+        return pred_action
 
 
 class WrappedModel(torch.nn.Module):

@@ -29,15 +29,15 @@ import os
 from pathlib import Path
 import sys
 import time
-from collections import deque 
+from collections import deque, Counter
 import copy
 from moviepy.editor import ImageSequenceClip
 from accelerate import Accelerator
 from datetime import timedelta
 from accelerate.utils import InitProcessGroupKwargs
 
-# This is for using the locally installed repo clone when using slurm
 from calvin_agent.models.calvin_base_model import CalvinBaseModel
+from experiments.robot.calvin.calvin_model import WrappedCalvinEvaluation, WrappedModel
 
 sys.path.insert(0, Path(__file__).absolute().parents[2].as_posix())
 
@@ -55,27 +55,11 @@ from termcolor import colored
 import torch
 from tqdm.auto import tqdm
 
-# from dual_sys_evaluation import DualSystemCalvinEvaluation
-# from utils.calvin_utils import print_and_save
-# import clip
-# from PreProcess import PreProcess
-
-from ema_pytorch import EMA
-from transformers.modeling_outputs import CausalLMOutputWithPast
-
 logger = logging.getLogger(__name__)
 
 os.environ["NCCL_TIMEOUT"] = '0'    # No timeout limits for garthering eval results
 os.environ["FFMPEG_BINARY"] = "auto-detect"
 CALVIN_ROOT = '/cpfs01/user/buqingwen/calvin'
-
-
-from collections import Counter
-import json
-import numpy as np
-
-from experiments.robot.calvin.calvin_model import WrappedCalvinEvaluation, WrappedModel
-
 
 
 def print_and_save(results, sequences, eval_result_path, task_name=None, epoch=None):
@@ -235,7 +219,6 @@ def rollout(env, model, task_oracle, subtask, val_annotations, debug, eval_dir, 
     return False
 
 
-
 from experiments.robot.robot_utils import DATE_TIME
 from dataclasses import dataclass
 from pathlib import Path
@@ -251,14 +234,13 @@ class GenerateConfig:
     #################################################################################################################
     model_family: str = "openvla"                    # Model family
     pretrained_checkpoint: Union[str, Path] = "./vla-scripts/calvin_log/finetune-calvin"     # Pretrained checkpoint path
-    load_in_8bit: bool = False                       # (For OpenVLA only) Load with 8-bit quantization
-    load_in_4bit: bool = False                       # (For OpenVLA only) Load with 4-bit quantization
+    load_in_8bit: bool = False                       # Load with 8-bit quantization
+    load_in_4bit: bool = False                       # Load with 4-bit quantization
     
     action_decoder_path:str = "./vla-scripts/calvin_log/finetune-calvin/action_decoder.pt"
     center_crop: bool = False                        # Center crop? (if trained w/ random crop image aug)
 
-    task_suite_name: str = "calvin"                  # Task suite. Options: libero_spatial, libero_object, libero_goal, libero_10, libero_90
-    window_size: int = 12
+    task_suite_name: str = "calvin"                  # Task suite. 
     unnorm_key: str = "calvin"
     calvin_root: str = '/calvin/dataset/task_ABC_D'  # Path to your local CALVIN path
 
@@ -269,7 +251,7 @@ class GenerateConfig:
     local_log_dir: str = "./experiments/eval_logs"   # Local directory for eval logs
 
     use_wandb: bool = False                          # Whether to also log results in Weights & Biases
-    wandb_project: str = "calvin_eval"               # Name of W&B project to log to (use default!)
+    wandb_project: str = "calvin_eval"               # Name of W&B project to log to
     wandb_entity: str = "opendrivelab"               # Name of entity to log under
 
     seed: int = 7                                    # Random Seed (for reproducibility)
@@ -286,7 +268,7 @@ def main(cfg: GenerateConfig) -> None:
     os.environ["NCCL_LAUNCH_MODE"] = "GROUP"
 
     # Set seed for reproducibility
-    seed_everything(42)
+    seed_everything(cfg.seed)
 
     # Initialize DDP with extended timeout
     kwargs = InitProcessGroupKwargs(timeout=timedelta(seconds=7200))  # 2 hours

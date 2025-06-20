@@ -82,7 +82,7 @@ Real-world robot experiments.
   -  [x] 3) Downstream Fine-tuned Models
       - [x] *LIBERO*
       - [ ] *Room2Room*
-      - [ ] *CALVIN*
+      - [x] *CALVIN*
       - [ ] *SimplerEnv*
 #### 2. 💪 Training and Evlauation Codes on Simulation Benchmarks
   -  [x] **1) LIBERO**
@@ -139,6 +139,12 @@ Real-world robot experiments.
     <td><a href="https://huggingface.co/qwbu/univla-7b">univla-7b</a></td>
     <td><a href="https://huggingface.co/qwbu/univla-7b-224-sft-libero">univla-7b-224-sft-libero</a></td>
     <td>Finetuned on the LIBERO dataset</a></td>
+  </tr>
+  <tr>
+    <td>univla-7b-224-sft-calvin</td>
+    <td><a href="https://huggingface.co/qwbu/univla-7b">univla-7b</a></td>
+    <td><a href="https://huggingface.co/qwbu/univla-7b-224-sft-calvin">univla-7b-224-sft-calvin</a></td>
+    <td>Finetuned on the CALVIN dataset</a></td>
   </tr>
 </table>
 

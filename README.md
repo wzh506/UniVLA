@@ -86,12 +86,12 @@ Real-world robot experiments.
       - [x] *LIBERO*
       - [x] *Room2Room*
       - [x] *CALVIN*
-      - [ ] *SimplerEnv*
+      - [x] *SimplerEnv*
 #### 2. 💪 Training and Evlauation Codes on Simulation Benchmarks
   -  [x] **1) LIBERO**
-  -  [ ] **2) Room2Room**
+  -  [x] **2) Room2Room**
   -  [x] **3) CALVIN**
-  -  [ ] **4) SimplerEnv**
+  -  [x] **4) SimplerEnv**
 #### 3. :dizzy: Codes and Guidelines for Real-world Deployment
   -  [x] Codes and Docs
 #### 4. :information_desk_person: Scripts for Pre-processing Human Dataset
@@ -138,22 +138,28 @@ Real-world robot experiments.
     <td>UniVLA pretrained only on Ego4D human videos. </a></td>
   </tr>
   <tr>
-    <td>univla-7b-224-sft-libero</td>
+    <td>univla-libero</td>
     <td><a href="https://huggingface.co/qwbu/univla-7b">univla-7b</a></td>
     <td><a href="https://huggingface.co/qwbu/univla-7b-224-sft-libero">univla-7b-224-sft-libero</a></td>
     <td>Finetuned on the LIBERO dataset</a></td>
   </tr>
   <tr>
-    <td>univla-7b-224-sft-calvin</td>
+    <td>univla-calvin</td>
     <td><a href="https://huggingface.co/qwbu/univla-7b">univla-7b</a></td>
     <td><a href="https://huggingface.co/qwbu/univla-7b-224-sft-calvin">univla-7b-224-sft-calvin</a></td>
     <td>Finetuned on the CALVIN dataset</a></td>
   </tr>
   <tr>
-    <td>univla-7b-224-sft-r2r</td>
+    <td>univla-r2r</td>
     <td><a href="https://huggingface.co/qwbu/univla-7b">univla-7b</a></td>
     <td><a href="https://huggingface.co/qwbu/univla-7b-224-sft-r2r">univla-7b-224-sft-r2r</a></td>
     <td>Finetuned on the R2R dataset</a></td>
+  </tr>
+  <tr>
+    <td>univla-bridge</td>
+    <td><a href="https://huggingface.co/qwbu/univla-7b">univla-7b</a></td>
+    <td><a href="https://huggingface.co/qwbu/univla-7b-224-sft-simpler-bridge">univla-7b-224-sft-simpler-bridge</a></td>
+    <td>Finetuned on the BridgeV2 (OXE ver.) dataset</a></td>
   </tr>
 </table>
 
@@ -328,7 +334,42 @@ torchrun --standalone --nnodes 1 --nproc-per-node 8 experiments/robot/calvin/run
     --pretrained_checkpoint /path/to/your/calvin_finetuned_univla \
     --seed 7
 ```
-> To be updated.
+
+#### 3) Room2Room
+> [!NOTE]
+> Please refer to [this documentation](https://github.com/OpenDriveLab/UniVLA/blob/372722b346ae7bf24981404e1a9d227270043f50/docs/room2room.md) for detailed guidelines.
+
+#### 4) SimplerEnv
+
+> Our SimplerEnv evlauation is based on the [official repo](https://github.com/simpler-env/SimplerEnv/tree/maniskill3).
+
+1. Clone and install SimplerEnv dependencies with
+
+```bash
+# We used the Maniskill3 version
+git clone -b maniskill3 https://github.com/simpler-env/SimplerEnv.git
+
+cd SimplerEnv
+pip install --upgrade git+https://github.com/haosulab/ManiSkill.git
+pip install -e .
+```
+
+2. Add ```experiments/robot/simpler-bridge/policies/univla``` to ```simpler_env/policies```, and replace ```simpler_env/real2sim_eval_maniskill3.py``` with ```experiments/robot/simpler-bridge/real2sim_eval_maniskill3.py```.
+
+3. Run evaluation on SimplerEnv-Bridge "Put Spoon on Table Cloth" task:
+
+> Please refer to ```experiments/robot/simpler-bridge/eval_simpler_bridge_4task.sh``` for the evaluation on all tasks.
+
+```bash
+ckpt_path="/path/to/your/univla-7b-224-sft-simpler-bridge"
+action_decoder_path="/path/to/your/univla-7b-224-sft-simpler-bridge/action_decoder.pt"
+
+CUDA_VISIBLE_DEVICES=0 XLA_PYTHON_CLIENT_PREALLOCATE=false python real2sim_eval_maniskill3.py \
+    --model="univla" -e "PutSpoonOnTableClothInScene-v1" -s 0 --num-episodes 24 --num-envs 1 \
+    --action_decoder_path ${action_decoder_path} \
+    --ckpt_path ${ckpt_path} \
+```
+
 
 ## :rocket: UniVLA's Performance
 
@@ -496,6 +537,110 @@ torchrun --standalone --nnodes 1 --nproc-per-node 8 experiments/robot/calvin/run
     </tr>
   </tbody>
 </table>
+
+
+> [!NOTE]
+> SimplerEnv evaluation on WidowX Robot tasks. (Averaged across 3 seeds)
+
+> We fix a minor bug about input processing, so the UniVLA's results are higher than the numbers reported in our original paper.
+
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: center;">
+      <th rowspan="2">Model</th>
+      <th colspan="2">Put Spoon on Towel</th>
+      <th colspan="2">Put Carrot on Plate</th>
+      <th colspan="2">Stack Green Block on Yellow Block</th>
+      <th colspan="2">Put Eggplant in Yellow Basket</th>
+      <th rowspan="2">#Overall Average</th>
+    </tr>
+    <tr style="text-align: center;">
+      <th>Grasp Spoon</th>
+      <th>Success</th>
+      <th>Grasp Carrot</th>
+      <th>Success</th>
+      <th>Grasp Green Block</th>
+      <th>Success</th>
+      <th>Grasp Eggplant</th>
+      <th>Success</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>RT-1-X</td>
+      <td>16.7%</td>
+      <td>0.0%</td>
+      <td>20.8%</td>
+      <td>4.2%</td>
+      <td>8.3%</td>
+      <td>0.0%</td>
+      <td>0.0%</td>
+      <td>0.0%</td>
+      <td>1.1%</td>
+    </tr>
+    <tr>
+      <td>Octo-Base</td>
+      <td>34.7%</td>
+      <td>12.5%</td>
+      <td>52.8%</td>
+      <td>8.3%</td>
+      <td>31.9%</td>
+      <td>0.0%</td>
+      <td>66.7%</td>
+      <td>43.1%</td>
+      <td>16.0%</td>
+    </tr>
+    <tr>
+      <td>Octo-Small</td>
+      <td>77.8%</td>
+      <td>47.2%</td>
+      <td>27.8%</td>
+      <td>9.7%</td>
+      <td>40.3%</td>
+      <td>4.2%</td>
+      <td>87.5%</td>
+      <td>56.9%</td>
+      <td>30.0%</td>
+    </tr>
+    <tr>
+      <td>OpenVLA</td>
+      <td>4.1%</td>
+      <td>0.0%</td>
+      <td>33.3%</td>
+      <td>0.0%</td>
+      <td>12.5%</td>
+      <td>0.0%</td>
+      <td>8.3%</td>
+      <td>4.1%</td>
+      <td>1.0%</td>
+    </tr>
+    <tr>
+      <td>RoboVLM</td>
+      <td>54.2%</td>
+      <td>29.2%</td>
+      <td>25.0%</td>
+      <td>25.0%</td>
+      <td>45.8%</td>
+      <td>12.5%</td>
+      <td>58.3%</td>
+      <td>58.3%</td>
+      <td>31.3%</td>
+    </tr>
+    <tr>
+      <td>UniVLA</td>
+      <td><b>76.4% ± 4.8%</b></td>
+      <td><b>52.8% ± 6.4%</b></td>
+      <td><b>79.2% ± 0.0%</b></td>
+      <td><b>55.6% ± 2.4%</b></td>
+      <td><b>66.7% ± 4.1%</b></td>
+      <td>2.8% ± 2.4%</td>
+      <td>93.0% ± 4.8%</td>
+      <td>80.6% ± 6.4%</td>
+      <td><b>47.9% ± 1.0%</b></td>
+    </tr>
+  </tbody>
+</table>
+
 
 > [!NOTE]
 > Real-world Experiments.

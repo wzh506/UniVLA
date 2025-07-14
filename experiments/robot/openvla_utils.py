@@ -54,7 +54,7 @@ def get_vla(cfg):
     # Note: `.to()` is not supported for 8-bit or 4-bit bitsandbytes models, but the model will
     #       already be set to the right devices and casted to the correct dtype upon loading.
     # We handle DDP evaluation in CALVIN with accelerator instead.
-    if not cfg.load_in_8bit and not cfg.load_in_4bit and 'libero' in cfg.task_suite_name:
+    if not cfg.load_in_8bit and not cfg.load_in_4bit and ('libero' in cfg.task_suite_name or 'r2r' in cfg.task_suite_name):
         vla = vla.to(DEVICE)
 
     # Load dataset stats used during finetuning (for action un-normalization).

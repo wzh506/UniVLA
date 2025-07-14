@@ -203,7 +203,73 @@ class PaddedCollatorForActionPrediction_LIBERO:
             output["dataset_names"] = dataset_names
         return output
 
+@dataclass
+class PaddedCollatorForActionPrediction_R2R:
+    model_max_length: int
+    pad_token_id: int
+    padding_side: str = "right"
+    pixel_values_dtype: torch.dtype = torch.float32
 
+    def __call__(self, instances: Sequence[Dict[str, torch.Tensor]]) -> Dict[str, torch.Tensor]:
+        
+        initial_pixel_values = [instance["initial_pixel_values"] for instance in instances]
+        target_pixel_values = [instance["target_pixel_values"] for instance in instances]
+        
+        
+        initial_pixel_values_hist, target_pixel_values_hist = [], []
+        with_hist = []
+        for instance in instances:
+            if instance["initial_pixel_values_hist"] is not None:
+                initial_pixel_values_hist.append(torch.stack(instance["initial_pixel_values_hist"]))
+                target_pixel_values_hist.append(torch.stack(instance["target_pixel_values_hist"]))
+                with_hist.append(torch.tensor(True))
+            else:
+                with_hist.append(torch.tensor(False))   
+
+        
+        pixel_values = [instance["pixel_values"] for instance in instances]
+        if "dataset_name" in instances[0]:
+            dataset_names = [instance["dataset_name"] for instance in instances]
+        else:
+            dataset_names = None
+
+        # For low-level policy training
+        actions = [instance["actions"] for instance in instances]
+        actions = torch.stack(actions, dim=0)
+
+        instructions = [instance["lang"] for instance in instances]
+
+
+        # [Contract] For VLA Training =>> No "Unimodal" Data!
+        assert all([pv is not None for pv in pixel_values]), "Invalid VLA Example with `pixel_values = None`!"
+
+        # Stack all `pixel_values` --> depending on type is torch.Tensor or Dict[str, torch.Tensor]
+
+        pixel_values = torch.stack(pixel_values)
+        initial_pixel_values = torch.stack(initial_pixel_values)
+        target_pixel_values = torch.stack(target_pixel_values)
+        initial_pixel_values_hist = torch.stack(initial_pixel_values_hist) if len(initial_pixel_values_hist) > 0 else []
+        target_pixel_values_hist = torch.stack(target_pixel_values_hist) if len(target_pixel_values_hist) > 0 else []
+        with_hist = torch.stack(with_hist)
+
+        output = dict(
+            pixel_values=pixel_values,
+            initial_pixel_values=initial_pixel_values,
+            target_pixel_values=target_pixel_values,
+            initial_pixel_values_hist=initial_pixel_values_hist,
+            target_pixel_values_hist=target_pixel_values_hist,
+            instructions=instructions,
+            with_hist=with_hist,
+            # input_ids=input_ids,
+            # attention_mask=attention_mask,
+            # labels=labels,
+            actions=actions,
+            # proprio=proprio
+        )
+        if dataset_names is not None:
+            output["dataset_names"] = dataset_names
+        return output
+        
 @dataclass
 class PaddedCollatorForActionPrediction_CALVIN:
     model_max_length: int

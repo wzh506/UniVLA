@@ -84,7 +84,7 @@ Real-world robot experiments.
       - [x] *Human-Only*
   -  [x] 3) Downstream Fine-tuned Models
       - [x] *LIBERO*
-      - [ ] *Room2Room*
+      - [x] *Room2Room*
       - [x] *CALVIN*
       - [ ] *SimplerEnv*
 #### 2. 💪 Training and Evlauation Codes on Simulation Benchmarks
@@ -148,6 +148,12 @@ Real-world robot experiments.
     <td><a href="https://huggingface.co/qwbu/univla-7b">univla-7b</a></td>
     <td><a href="https://huggingface.co/qwbu/univla-7b-224-sft-calvin">univla-7b-224-sft-calvin</a></td>
     <td>Finetuned on the CALVIN dataset</a></td>
+  </tr>
+  <tr>
+    <td>univla-7b-224-sft-r2r</td>
+    <td><a href="https://huggingface.co/qwbu/univla-7b">univla-7b</a></td>
+    <td><a href="https://huggingface.co/qwbu/univla-7b-224-sft-r2r">univla-7b-224-sft-r2r</a></td>
+    <td>Finetuned on the R2R dataset</a></td>
   </tr>
 </table>
 

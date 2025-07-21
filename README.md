@@ -22,16 +22,18 @@
 ## Table of Contents
 - [:movie_camera: Demo](#movie_camera-demo)
 - [:loudspeaker: News](#loudspeaker-news)
-- [:pushpin: TODO List](#pushpin-todo-list)
 - [🤗 Model Zoo](#ckpts)
 - [:video_game: Getting Started](#installation)
 - [:fire: Training Recipe](#fire-training-recipe)
+  - [Data Preparation](#zero-data-preparation)  
   - [Task-centric Latent Action Learning](#one-task-centric-latent-action-learning)
   - [Pretraining of Generalist Policy](#two-pretraining-of-generalist-policy)
   - [Post-training for Deployment & Evaluations](#three-post-training-for-deployment--evaluations)
     - [Real-world Experiment](#mechanical_arm-real-world-experiment)
     - [LIBERO](#1-libero)
     - [CALVIN](#2-calvin)
+    - [Room2Room](#3-room2room)
+    - [SimplerEnv](#4-simplerenv)
 - [:rocket: UniVLA's Performance](#rocket-univlas-performance)
 - [:pencil: Citation](#pencil-citation)
 
@@ -71,31 +73,6 @@ Real-world robot experiments.
 
 - **[2025/05]** The code of UniVLA v1.0 is released. Please check it out!
 
-
-
-## :pushpin: TODO list
-
-
-#### 1. 🤗 Checkpoints Release
-  -  [x] 1) Latent action model
-  -  [x] 2) Pre-trained Models
-      - [x] *Full (Manip. + Navi. + Human)*
-      - [x] *BridgeV2-Only*
-      - [x] *Human-Only*
-  -  [x] 3) Downstream Fine-tuned Models
-      - [x] *LIBERO*
-      - [x] *Room2Room*
-      - [x] *CALVIN*
-      - [x] *SimplerEnv*
-#### 2. 💪 Training and Evlauation Codes on Simulation Benchmarks
-  -  [x] **1) LIBERO**
-  -  [x] **2) Room2Room**
-  -  [x] **3) CALVIN**
-  -  [x] **4) SimplerEnv**
-#### 3. :dizzy: Codes and Guidelines for Real-world Deployment
-  -  [x] Codes and Docs
-#### 4. :information_desk_person: Scripts for Pre-processing Human Dataset
-  -  [ ] Codes for converting Ego4D into RLDS format
 
 
 ## 🤗 Model Zoo <a name="ckpts"></a>
@@ -193,6 +170,12 @@ pip install "flash-attn==2.5.5" --no-build-isolation
 ```
 
 ## :fire: Training Recipe
+
+### :zero: Data Preparation
+
+#### Please refer to [this script](https://github.com/moojink/rlds_dataset_mod/blob/ad83e6c0efad5823540c0f6d3a05529596ead0b5/prepare_open_x.sh) for an example of how to download datasets from OXE
+
+[optional] Please follow [this instruction](https://github.com/OpenDriveLab/UniVLA/blob/2b780a5992406262680c6c66150564b3d8befaf2/vla-scripts/extern/ego4d_rlds_dataset_builder/ego4d/README.md) if you'd like to convert Ego4D data into RLDS format for training UniVLA.
 
 ### :one: Task-centric Latent Action Learning
 > We hightly recommond directly using our pre-trained latent action model ckeckpoints to save your time and compute.
@@ -544,7 +527,7 @@ CUDA_VISIBLE_DEVICES=0 XLA_PYTHON_CLIENT_PREALLOCATE=false python real2sim_eval_
 
 > We fix a minor bug about input processing, so the UniVLA's results are higher than the numbers reported in our original paper.
 
-<table border="1" class="dataframe">
+<table style="width:100%; border:1px solid; border-collapse:collapse;">
   <thead>
     <tr style="text-align: center;">
       <th rowspan="2">Model</th>

@@ -638,8 +638,8 @@ If you find our code or models useful in your work, please cite [our paper](http
 
 ```bibtex
 @article{bu2025univla,
-  title={UniVLA: Learning to Act Anywhere with Task-centric Latent Actions}, 
-  author={Qingwen Bu and Yanting Yang and Jisong Cai and Shenyuan Gao and Guanghui Ren and Maoqing Yao and Ping Luo and Hongyang Li},
+  title={Univla: Learning to act anywhere with task-centric latent actions},
+  author={Bu, Qingwen and Yang, Yanting and Cai, Jisong and Gao, Shenyuan and Ren, Guanghui and Yao, Maoqing and Luo, Ping and Li, Hongyang},
   journal={arXiv preprint arXiv:2505.06111},
   year={2025}
 }

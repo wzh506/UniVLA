@@ -44,7 +44,7 @@ def process_video(video_name, clips, args, info):
     video_path = os.path.join(args.source_videos_dir, f"{video_name}.mp4")
     frames = read_frames_from_video(video_path)
 
-    for clip in clips:
+    for idx, clip in enumerate(clips):
         action_name = clip['pre_frame']['path'].split('/')[1]
         save_path = os.path.join(args.denseclips_dir, video_name, action_name)
         os.makedirs(save_path, exist_ok=True)
@@ -67,7 +67,8 @@ def process_video(video_name, clips, args, info):
             'source_video': video_path,
             'start_frame': start,
             'end_frame': end,
-            'language': clip['narration_text']
+            'language': clip['narration_text'],
+            'id': idx
         })
 
 def main():

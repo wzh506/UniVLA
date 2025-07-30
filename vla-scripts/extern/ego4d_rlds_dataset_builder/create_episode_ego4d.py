@@ -84,7 +84,7 @@ def create_fake_episode(clip_dir, save_dir, annotation, target_size, verify=Fals
     for anno in annotation:
         if anno['video_name'] == video_name and anno['action_name'] == clip_name:
             caption = anno['language'][5:]  # Remove first 5 characters '#C C '
-            episode_id = anno['id'] - 1
+            episode_id = anno['id']
             break
     
     if caption is None or episode_id is None:

@@ -30,7 +30,7 @@ conda env create -f environment_ubuntu.yml
 Then activate the environment using:
 ```
 conda activate rlds_env
-cd vla-scripts/extern/ego4d_rlds_dataset_builder/ego4d
+cd vla-scripts/extern/ego4d_rlds_dataset_builder
 pip install -e .
 ```
 

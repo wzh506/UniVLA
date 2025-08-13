@@ -750,6 +750,15 @@ class DiskCalvinDataset(BaseCalvinDataset):
             self.abs_datasets_dir, self.save_format
         )
 
+        self.dataset_statistics = {
+            "calvin": {
+                "action": {
+                    "q01": np.array([[-0.709374189376831, -0.5701979398727417, -0.4474960544705391, -0.4189372956752777, -0.46931618452072144, -1.0, -1.0]]),
+                    "q99": np.array([[0.6778383851051331, 0.5456381440162659, 0.5794259309768677, 0.41331127285957336, 0.4224340233206751, 1.0, 1.0]])
+              }
+            }
+        }
+
 
     def _get_episode_name(self, file_idx: int) -> Path:
         """

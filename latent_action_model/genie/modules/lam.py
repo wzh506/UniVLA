@@ -115,14 +115,9 @@ class UncontrolledDINOLatentActionModel(nn.Module):
 
         # Encode
         z = self.encoder(padded_patches, lang_embed, attention_mask) 
-
-        # Get language embedding
-        lang_emb = z[:, 1:, self.num_codes + dion_features.shape[2]:]
-
+      
         # Get latent action for all future frames
         z = self.to_codebook(z[:, 1:, :self.num_codes])  # (B, T-1, n, E)
-
-        
 
         # Vector quantize
         z = z.reshape(B * (T - 1), self.num_codes, self.latent_dim)
@@ -134,7 +129,6 @@ class UncontrolledDINOLatentActionModel(nn.Module):
             "z": z,
             "emb": emb,
             "indices": indices,
-            "lang_emb": lang_emb
         }
 
     def forward(self, batch: Dict) -> Dict:
@@ -154,7 +148,7 @@ class UncontrolledDINOLatentActionModel(nn.Module):
         video_action_patches = torch.cat([action_patches, video_patches], dim=2)
 
         # Decode
-        video_recon = self.decoder(video_action_patches, outputs['lang_emb'], attention_mask)
+        video_recon = self.decoder(video_action_patches, lang_embed.unsqueeze(1), attention_mask)
         video_recon = video_recon[:, :, self.num_codes: self.num_codes + video_patches.shape[2]] 
 
         outputs.update(
@@ -254,17 +248,14 @@ class ControllableDINOLatentActionModel(nn.Module):
         dion_features = self.dino_encoder.forward_features(videos)['x_norm_patchtokens']
         dion_features = rearrange(dion_features, "(b T) l d -> b T l d", T=2)
 
-        
         action_pad = self.action_latent.expand(B, T, -1, -1)
         padded_patches = torch.cat([action_pad, dion_features], dim=2)
-
         action_pad_controllable = self.action_latent_controllable.expand(B, T, -1, -1)
         padded_patches = torch.cat([action_pad_controllable, padded_patches], dim=2)
 
         # Encode
         z = self.encoder(padded_patches) 
-
-
+      
         # Get 'uncotrollable' latent action for all future frames
         z_uncontrol = self.to_codebook_uncontrol(z[:, 1:, self.num_codes : self.num_codes * 2])
 
@@ -273,7 +264,6 @@ class ControllableDINOLatentActionModel(nn.Module):
         z_q_uncontrol, z_uncontrol, emb_uncontrol, indices_uncontrol = self.vq(z_uncontrol)
         z_q_uncontrol = z_q_uncontrol.reshape(B, T - 1, self.num_codes, self.latent_dim)
 
-
         # Get 'cotrollable' latent action for all future frames
         z_action = self.to_codebook(z[:, 1:, :self.num_codes])  # (B, T-1, n, E)
 
@@ -281,8 +271,6 @@ class ControllableDINOLatentActionModel(nn.Module):
         z_action = z_action.reshape(B * (T - 1), self.num_codes, self.latent_dim)
         z_q, z, emb, indices = self.vq_action(z_action)
         z_q = z_q.reshape(B, T - 1, self.num_codes, self.latent_dim)
-
-
 
         return {
             "patches": dion_features,

@@ -1,0 +1,19 @@
+1.环境配置
+安装使用环境为univla
+
+
+2.数据集
+OpenX数据集很大，不可能全部下载
+目前我只下载了jaco,nio服务器debug只有cpu4,运行数据处理时省着点用
+可以搜索一下taco,然后把其他数据集都注释掉
+
+3.代码运行
+stage 1:
+cd latent_action_model
+torchrun --standalone --nnodes 1 --nproc-per-node 1 main.py fit --config config/lam-stage-1.yaml \
+    2>&1 | tee lam-stage-1.log
+
+stage 2:
+torchrun --standalone --nnodes 1 --nproc-per-node 8 main.py fit \
+    --config config/lam-stage-2.yaml \
+    2>&1 | tee lam-stage-2.log

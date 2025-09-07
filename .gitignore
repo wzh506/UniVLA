@@ -152,3 +152,7 @@ dmypy.json
 # Caches and Datasets
 cache/
 data/
+
+
+rlds_dataset_mod/
+flash-attention/

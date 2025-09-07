@@ -24,9 +24,9 @@ model:
   stage_one_ckpt: ./logs/task_centric_lam_stage1/epoch=0-step=100000.ckpt
 
 data:
-  data_root: /path/to/your/rlds_data_collection
+  data_root: /data-algorithm/lucian.wang/temporal  #一般的数据集太大了
   data_mix: omni_magic_soup_plus_plus   # Manip. + Navi. + Human                                  
-  batch_size: 64
+  batch_size: 2 #我用的2
   resolution: 224
   num_frames: 16  # TODO
   episodic: false
@@ -37,7 +37,7 @@ trainer:
   max_epochs: 20
   accelerator: gpu
   num_nodes: 1
-  devices: 8
+  devices: 1
   strategy: ddp_find_unused_parameters_false
   precision: 16-mixed
   log_every_n_steps: 1000

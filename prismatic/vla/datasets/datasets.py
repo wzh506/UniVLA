@@ -28,17 +28,24 @@ from prismatic.vla.datasets.rlds.utils.data_utils import NormalizationType
 IGNORE_INDEX = -100
 
 # From 3Hz to 5Hz control frequency
-datasets_with_lower_frequency = ['fractal20220817_data', 'toto', 'berkeley_autolab_ur5', 
-'nyu_franka_play_dataset_converted_externally_to_rlds', 
-'ucsd_kitchen_dataset_converted_externally_to_rlds', 
-'dlr_edan_shared_control_converted_externally_to_rlds', 'dobbe']
+datasets_with_lower_frequency = ['fractal20220817_data', 
+                                'toto', 
+                                'berkeley_autolab_ur5', 
+                                'nyu_franka_play_dataset_converted_externally_to_rlds', 
+                                'ucsd_kitchen_dataset_converted_externally_to_rlds', 
+                                'dlr_edan_shared_control_converted_externally_to_rlds', 
+                                'dobbe']
 
 # From 15Hz to 30 Hz control frequency
-datasets_with_higher_frequency = ['utaustin_mutex', 
-'iamlab_cmu_pickup_insert_converted_externally_to_rlds', 
-'austin_sailor_dataset_converted_externally_to_rlds', 
-'austin_sailor_dataset_converted_externally_to_rlds', 
-'toto', 'viola', 'droid']
+datasets_with_higher_frequency = [
+    'utaustin_mutex', 
+    'iamlab_cmu_pickup_insert_converted_externally_to_rlds', 
+    'austin_sailor_dataset_converted_externally_to_rlds', 
+    'austin_sailor_dataset_converted_externally_to_rlds', 
+    'toto', 
+    'viola', 
+    'droid'
+]
 
 
 @dataclass
@@ -385,6 +392,7 @@ class RLDSDataset(IterableDataset):
     def __iter__(self) -> Dict[str, Any]:
         for rlds_batch in self.dataset.as_numpy_iterator():
             yield self.batch_transform(rlds_batch)
+        print('over one epoch of data')
 
     def __len__(self) -> int:
         return self.dataset_length

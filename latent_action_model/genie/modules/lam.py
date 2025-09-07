@@ -78,12 +78,14 @@ class UncontrolledDINOLatentActionModel(nn.Module):
         )
 
         # Load T5 text encoder model
-        self.text_encoder = T5EncoderModel.from_pretrained('./t5-base')
+        # self.text_encoder = T5EncoderModel.from_pretrained('./t5-base')
+        self.text_encoder = T5EncoderModel.from_pretrained('t5-base')
         self.text_encoder.requires_grad_(False)
         self.lang_proj = nn.Linear(768, model_dim)
 
         # Load T5 tokenizer
-        self.tokenizer = T5Tokenizer.from_pretrained('./t5-base')
+        # self.tokenizer = T5Tokenizer.from_pretrained('./t5-base')
+        self.tokenizer = T5Tokenizer.from_pretrained('t5-base')
 
     def encode_text(self, lang: List):
         # Tokenize the batch with padding to the longest sequence

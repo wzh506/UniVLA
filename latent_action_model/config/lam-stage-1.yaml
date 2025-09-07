@@ -23,20 +23,20 @@ model:
   stage: stage-1
 
 data:
-  data_root: /path/to/your/rlds_data_collection
+  data_root: /data-algorithm/lucian.wang/temporal #/data-algorithm/lucian.wang/data/jaco_play openx的数据集我就下载了一个
   data_mix: omni_magic_soup_plus_plus       # Manip. + Navi. + Human
-  batch_size: 64
+  batch_size: 2 #原来是64.。
   resolution: 224
-  num_frames: 16  # TODO
+  num_frames: 16  # TODO,是不是没有用上？
   episodic: false
-  shuffle_buffer_size: 45000                # works fine for 1,600 GB memories, plz adjust based on yout setup
+  shuffle_buffer_size: 45000                # works fine for 1,600 GB memories, plz adjust based on yout setup，原来是45000
   image_aug: true
 
 trainer:
   max_epochs: 20
   accelerator: gpu
   num_nodes: 1
-  devices: 8
+  devices: 1 #原来是1，那请问那个devices node有什么用呢
   strategy: ddp_find_unused_parameters_false
   precision: 16-mixed
   log_every_n_steps: 1000

@@ -35,8 +35,8 @@ class TrainConfig:
     vla: VLAConfig = field(
         default_factory=VLAConfig.get_choice_class(VLARegistry.DINOSIGLIP_224PX_MX_BRIDGE.vla_id)
     )
-    pretrain_vlm: str = '/path/to/your/prism-dinosiglip-224px_7b'
-    lam_path: str = "latent_action_model/logs/task_centric_lam_stage2/epoch=0-step=200000.ckpt"
+    pretrain_vlm: str = '/home/lucian.wang/github/UniVLA/ckpt/prismatic-vlms/prism-dinosiglip-224px+7b'
+    lam_path: str = "/home/lucian.wang/github/UniVLA/ckpt/univla-latent-action-model/lam-stage-2.ckpt"
 
     # LAM setting
     codebook_size: int = 16
@@ -49,12 +49,12 @@ class TrainConfig:
 
     # Directory Paths
     data_root_dir: Path = Path(                                     # Path to Open-X dataset directory
-        "/path/to/your/rlds_data_collection"
+        "/data-algorithm/lucian.wang/temporal"
     )
     run_root_dir: Path = Path("runs")                               # Path to directory to store logs & checkpoints
 
     # Resume Run Parameters
-    pretrained_checkpoint: Optional[Path] = None                    # Absolute Path to Checkpoint
+    pretrained_checkpoint: Optional[Path] = None            # Absolute Path to Checkpoint
     is_resume: bool = True                                          # Whether we are continuing a prior training run
                                                                     #   (only applicable given pretrained checkpoint)
     resume_step: Optional[int] = None                               # Global Step to Resume (should match checkpoint)
@@ -103,7 +103,11 @@ def train(cfg: TrainConfig) -> None:
     overwatch.info("OpenVLA Training :: Warming Up")
 
     # Note => Under `torchrun` initializing `overwatch` will automatically set up `torch.distributed`
-    torch.cuda.set_device(device_id := overwatch.local_rank())
+    # torch.cuda.set_device(device_id := overwatch.local_rank())
+    #debug没有torchrun，运行不了这个
+    import os
+    device_id = int(os.environ.get("LOCAL_RANK", 0))
+    torch.cuda.set_device(device_id)
     torch.cuda.empty_cache()
 
     # Configure Unique Run Name & Save Directory

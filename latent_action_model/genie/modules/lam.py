@@ -88,7 +88,7 @@ class UncontrolledDINOLatentActionModel(nn.Module):
         self.tokenizer = T5Tokenizer.from_pretrained('t5-base')
 
     def encode_text(self, lang: List):
-        # Tokenize the batch with padding to the longest sequence
+        # Tokenize the batch with padding to the longest sequence,所以长度有max_len,这个东西是分词器，没有参数
         encoding = self.tokenizer(lang, return_tensors="pt", padding=True).to(self.device) 
 
         # Access the input IDs and attention masks
@@ -108,14 +108,14 @@ class UncontrolledDINOLatentActionModel(nn.Module):
         # Preprocess videos
         B, T = videos.shape[:2]
         videos = rearrange(videos, "b T c h w -> (b T) c h w")
-        videos = self.dino_transform(videos)
-        dion_features = self.dino_encoder.forward_features(videos)['x_norm_patchtokens']
+        videos = self.dino_transform(videos) #图像归一化
+        dion_features = self.dino_encoder.forward_features(videos)['x_norm_patchtokens'] #打印了一下发现全是false，而且输出有很多
         dion_features = rearrange(dion_features, "(b T) l d -> b T l d", T=2)
 
-        action_pad = self.action_latent.expand(B, T, -1, -1)
+        action_pad = self.action_latent.expand(B, T, -1, -1) #这是input dependent
         padded_patches = torch.cat([action_pad, dion_features], dim=2)
-
-        # Encode
+        # 
+        # Encode,如何运算
         z = self.encoder(padded_patches, lang_embed, attention_mask) 
       
         # Get latent action for all future frames
@@ -126,11 +126,11 @@ class UncontrolledDINOLatentActionModel(nn.Module):
         z_q, z, emb, indices = self.vq(z)
         z_q = z_q.reshape(B, T - 1, self.num_codes, self.latent_dim)
         return {
-            "patches": dion_features,
-            "z_q": z_q,
+            "patches": dion_features, #图像特征
+            "z_q": z_q,# 离散化的latent action
             "z": z,
-            "emb": emb,
-            "indices": indices,
+            "emb": emb, #原来的输入x
+            "indices": indices,# 离散的action index
         }
 
     def forward(self, batch: Dict) -> Dict:
@@ -139,18 +139,18 @@ class UncontrolledDINOLatentActionModel(nn.Module):
         H, W = batch["videos"].shape[3:5]
 
         lang_embed, attention_mask = self.encode_text(batch["task_instruction"])
-        lang_embed = self.lang_proj(lang_embed)
+        lang_embed = self.lang_proj(lang_embed) #一个迷惑的线性变换head,这个参与训练
         attention_mask = torch.cat([torch.ones((B, self.num_codes + (H // self.patch_size)**2)).to(self.device),
                                     attention_mask],
-                                    dim = -1)
+                                    dim = -1) #假定了图像的长宽高相同H==W，patch是每一个的大小
 
         outputs = self.vq_encode(batch["videos"], repeat(lang_embed, 'b l d -> b T l d', T=T), attention_mask.repeat(T, 1)) 
-        video_patches = self.patch_up(outputs["patches"][:, :-1])
+        video_patches = self.patch_up(outputs["patches"][:, :-1])#使用当前维度
         action_patches = self.action_up(outputs["z_q"])
         video_action_patches = torch.cat([action_patches, video_patches], dim=2)
 
         # Decode
-        video_recon = self.decoder(video_action_patches, lang_embed.unsqueeze(1), attention_mask)
+        video_recon = self.decoder(video_action_patches, lang_embed.unsqueeze(1), attention_mask)#这是一个transformer decoder
         video_recon = video_recon[:, :, self.num_codes: self.num_codes + video_patches.shape[2]] 
 
         outputs.update(
@@ -255,15 +255,15 @@ class ControllableDINOLatentActionModel(nn.Module):
         action_pad_controllable = self.action_latent_controllable.expand(B, T, -1, -1)
         padded_patches = torch.cat([action_pad_controllable, padded_patches], dim=2)
 
-        # Encode
+        # Encode,现在已经没有语言输入了
         z = self.encoder(padded_patches) 
-      
-        # Get 'uncotrollable' latent action for all future frames
+        #从这里区分 controllable 和 uncontrollable
+        # Get 'uncotrollable' latent action for all future frames,你看到没，z_uncontrol是未来帧的信息,而且只获得未来的
         z_uncontrol = self.to_codebook_uncontrol(z[:, 1:, self.num_codes : self.num_codes * 2])
 
         # Vector quantize
         z_uncontrol = z_uncontrol.reshape(B * (T - 1), self.num_codes, self.latent_dim)
-        z_q_uncontrol, z_uncontrol, emb_uncontrol, indices_uncontrol = self.vq(z_uncontrol)
+        z_q_uncontrol, z_uncontrol, emb_uncontrol, indices_uncontrol = self.vq(z_uncontrol) #让VQ的分布更接近
         z_q_uncontrol = z_q_uncontrol.reshape(B, T - 1, self.num_codes, self.latent_dim)
 
         # Get 'cotrollable' latent action for all future frames
@@ -276,10 +276,10 @@ class ControllableDINOLatentActionModel(nn.Module):
 
         return {
             "patches": dion_features,
-            "z_q": z_q,
+            "z_q": z_q, #
             "z": z,
             "emb": emb,
-            "z_q_uncontrol": z_q_uncontrol,
+            "z_q_uncontrol": z_q_uncontrol, #
             "z_uncontrol": z_uncontrol,
             "emb_uncontrol": emb_uncontrol,
             "indices": indices,
@@ -292,7 +292,7 @@ class ControllableDINOLatentActionModel(nn.Module):
         H, W = batch["videos"].shape[3:5]
 
         outputs = self.vq_encode(batch["videos"]) 
-        video_patches = self.patch_up(outputs["patches"][:, :-1])
+        video_patches = self.patch_up(outputs["patches"][:, :-1]) #获得除最后帧的所有帧
 
         # Decode
         video_action_patches = torch.cat([self.action_up(outputs["z_q"]), 
@@ -300,7 +300,7 @@ class ControllableDINOLatentActionModel(nn.Module):
                                           video_patches],
                                           dim=2)
         video_recon = self.decoder(video_action_patches)
-        video_recon = video_recon[:, :, -video_patches.shape[2]:] 
+        video_recon = video_recon[:, :, -video_patches.shape[2]:] #只获得和原始vp对其的重建部分
 
         outputs.update(
             {

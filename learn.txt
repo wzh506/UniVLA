@@ -17,3 +17,10 @@ stage 2:
 torchrun --standalone --nnodes 1 --nproc-per-node 8 main.py fit \
     --config config/lam-stage-2.yaml \
     2>&1 | tee lam-stage-2.log
+
+pretraining of Generalist Policy:
+统一读取./prismatic/conf/vla.py，在train.py中有发现import
+
+下载hugging face的仓库
+huggingface-cli download qwbu/univla-latent-action-model --local-dir "/home/lucian.wang/github/UniVLA/ckpt/univla-latent-action-model"
+TRI-ML/prismatic-vlms

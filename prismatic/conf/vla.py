@@ -78,9 +78,9 @@ class Exp_SigLIP_224px_Bridge(VLAConfig):
     epochs: int = 10
     max_steps: Optional[int] = None
 
-    expected_world_size: int = 8
-    global_batch_size: int = 256
-    per_device_batch_size: int = 32
+    expected_world_size: int = 1 # origin 8
+    global_batch_size: int = 2   # oring 256
+    per_device_batch_size: int = 2 #origin 32
 
     learning_rate: float = 2e-5
     weight_decay: float = 0.0
@@ -120,9 +120,9 @@ class Exp_DinoSigLIP_224px_OXE_Magic_Soup_Plus(Exp_SigLIP_224px_Bridge):
     data_mix: str = "omni_magic_soup_plus"          # OpenX (Manipulation + Navigation)
     # data_mix: str = "omni_magic_soup_plus_plus"   # OpenX + Humam
 
-    expected_world_size: int = 32
-    global_batch_size: int = 1024
-    per_device_batch_size: int = 32
+    expected_world_size: int = 1 #origin 32
+    global_batch_size: int = 2 #origin 1024
+    per_device_batch_size: int = 2 # origin 32
 
 
 

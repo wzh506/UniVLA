@@ -175,11 +175,11 @@ class SpatioTemporalTransformer(nn.Module):
         self.causal_temporal = causal_temporal
 
     def forward(self, x: Tensor, lang_embed: Tensor = None, attn_mask: Tensor = None) -> Tensor:
-        x = self.ffn(x)
+        x = self.ffn(x) #x是oberved latent action+image的变量
         x = self.pos_enc(x)
 
         if lang_embed is not None:
-            x = torch.cat([x, lang_embed], dim=2)
+            x = torch.cat([x, lang_embed], dim=2) #直接concat??
 
         for block in self.transformer_blocks:
             x = block(x, self.causal_temporal, attn_mask)
@@ -373,7 +373,7 @@ class VectorQuantizer(nn.Module):
 
     def update_usage(self, min_enc) -> None:
         for idx in min_enc:
-            self.usage[idx] = self.usage[idx] + 1  # Add used code
+            self.usage[idx] = self.usage[idx] + 1  # Add used code，统计每个code使用次数
 
     def random_restart(self) -> None:
         if self.code_restart:
@@ -402,15 +402,16 @@ class VectorQuantizer(nn.Module):
         # Get indices and embeddings
         indices = torch.argmin(distance, dim=-1)
         # indices = torch.randint(0, 31, (8,4)).to('cuda')
-        z = self.codebook(indices)
+        z = self.codebook(indices)#本来用的是x，但是转化到z了
         
         # Update code usage
         if not self.training or self.code_restart:
             self.update_usage(indices)
 
         # Straight through estimator
-        z_q = x + (z - x).detach()
+        z_q = x + (z - x).detach() #这里阻断了z的梯度传播，用的z的值，但是不让梯度传递到z上
         return z_q, z, x, indices
+        #      z_q, z, emb, indices
 
 
 class ResidualVectorQuantizer(VectorQuantizer):

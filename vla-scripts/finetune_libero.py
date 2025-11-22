@@ -104,16 +104,16 @@ class Wrapped_Model(torch.nn.Module):
 @dataclass
 class FinetuneConfig:
     # fmt: off
-    vla_path: str = "/path/to/your/pretrained-univla-7b"            # Path to your local UniVLA path
-    lam_path: str = "latent_action_model/logs/task_centric_lam_stage2/epoch=0-step=200000.ckpt"
+    vla_path: str = "/home/lucian.wang/github/UniVLA/ckpt/univla-7b"            # Path to your local UniVLA path
+    lam_path: str = "/home/lucian.wang/github/UniVLA/ckpt/univla-latent-action-model/lam-stage-2.ckpt"
     # Directory Paths
-    data_root_dir: Path = Path("/LIBERO/modified_libero_rlds")      # Path to Open-X dataset directory
+    data_root_dir: Path = Path("/data-algorithm/lucian.wang/temporal")      # Path to Open-X dataset directory
     dataset_name: str = "libero_spatial_no_noops"                   # Name of fine-tuning dataset (e.g., `droid_wipe`)
     run_root_dir: Path = Path("runs")                               # Path to directory to store logs & checkpoints
     adapter_tmp_dir: Path = Path("adapter-tmp")                     # Temporary directory for LoRA weights before fusing
 
     # Fine-tuning Parameters
-    batch_size: int = 8                                             # Fine-tuning batch size
+    batch_size: int = 1                                             # Fine-tuning batch size
     max_steps: int = 30000                                          # Max number of fine-tuning steps
     save_steps: int = 30000                                         # Interval for checkpoint saving
     learning_rate: float = 3.5e-4                                   # Fine-tuning learning rate
@@ -143,7 +143,7 @@ class FinetuneConfig:
 
     # Tracking Parameters
     wandb_project: str = "fientune-LIBERO"                          # Name of W&B project to log to (use default!)
-    wandb_entity: str = "opendrivelab"                              # Name of entity to log under
+    wandb_entity: str = "peking-university-electronics-of-colleage"                              # Name of entity to log under
     run_id_note: Optional[str] = None                               # Extra note for logging, Weights & Biases
 
 
@@ -231,7 +231,10 @@ def finetune(cfg: FinetuneConfig) -> None:
     trainable_total_params = sum(p.numel() for p in wrapped_model.parameters() if p.requires_grad)
     print('Total Trainable Params: ', trainable_total_params)
     # Wrap VLA in PyTorch DDP Wrapper for Multi-GPU Training
-    wrapped_model = DDP(wrapped_model, device_ids=[device_id], find_unused_parameters=True, gradient_as_bucket_view=True)
+    # wrapped_model = DDP(wrapped_model, device_ids=[device_id], find_unused_parameters=True, gradient_as_bucket_view=True)
+        # 只在多卡时用 DDP
+    if torch.cuda.device_count() > 1 or distributed_state.num_processes > 1:
+        wrapped_model = DDP(wrapped_model, device_ids=[device_id], find_unused_parameters=True, gradient_as_bucket_view=True)
     
 
     # Create Optimizer =>> note that we default to a simple constant learning rate!
@@ -271,12 +274,18 @@ def finetune(cfg: FinetuneConfig) -> None:
         window_size=cfg.window_size
     )
     
+    def get_vla_config(wrapped_model):
+    # 如果是 DDP，取 .module.vla，否则直接 .vla
+        if hasattr(wrapped_model, "module"):
+            return wrapped_model.module.vla.config.image_sizes
+        else:
+            return wrapped_model.vla.config.image_sizes
 
     vla_dataset = RLDSDataset(
         cfg.data_root_dir,
         cfg.dataset_name,
         batch_transform,
-        resize_resolution=tuple(wrapped_model.module.vla.config.image_sizes),
+        resize_resolution=tuple(get_vla_config(wrapped_model)),
         shuffle_buffer_size=cfg.shuffle_buffer_size,
         image_aug=cfg.image_aug,
         window_size=cfg.window_size + 1,        # for constructing history latent actions
@@ -308,7 +317,7 @@ def finetune(cfg: FinetuneConfig) -> None:
     recent_action_accuracies = deque(maxlen=cfg.grad_accumulation_steps)
     recent_l1_losses = deque(maxlen=cfg.grad_accumulation_steps)
 
-    # Train!
+    # Train! But how comes the input_ids?
     with tqdm.tqdm(total=cfg.max_steps, leave=False) as progress:
         wrapped_model.train()
         optimizer.zero_grad()

@@ -441,8 +441,8 @@ class TrainingStrategy(ABC):
                     "cuda", dtype=self.mixed_precision_dtype, enabled=self.enable_mixed_precision_training
                 ):
                     # [Contract] self.vlm.forward() must automatically compute `loss` and return!
-                    output: CausalLMOutputWithPast = self.vlm(
-                        input_ids=batch["input_ids"],
+                    output: CausalLMOutputWithPast = self.vlm( #这里计算loss和进行梯度回传
+                        input_ids=batch["input_ids"],#模型应该采取的prompt动作
                         attention_mask=batch["attention_mask"],
                         pixel_values=batch["pixel_values"],
                         labels=batch["labels"],

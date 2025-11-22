@@ -152,7 +152,7 @@ class FinetuneConfig:
 
     # Tracking Parameters
     wandb_project: str = "fientune-CALVIN"                          # Name of W&B project to log to (use default!)
-    wandb_entity: str = "opendrivelab"                              # Name of entity to log under
+    wandb_entity: str = "peking-university-electronics-of-colleage"                              # Name of entity to log under
     run_id_note: Optional[str] = None                               # Extra note for logging, Weights & Biases
 
     # fmt: on
@@ -161,6 +161,8 @@ class FinetuneConfig:
 @draccus.wrap()
 def finetune(cfg: FinetuneConfig) -> None:
     print(f"Fine-tuning OpenVLA Model `{cfg.vla_path}` on `{cfg.dataset_name}`")
+    import torch.distributed as dist
+    dist.init_process_group(backend="nccl", init_method="env://", world_size=1, rank=0)
 
     # [Validate] Ensure GPU Available & Set Device / Distributed Context
     assert torch.cuda.is_available(), "Fine-tuning assumes at least one GPU is available!"

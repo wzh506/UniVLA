@@ -307,7 +307,7 @@ class PrismaticVLM(VLM):
 
     # Note =>> We're not explicitly subclassing `PreTrainedModel` because we don't need the bloat; however, `forward()`
     #          *must* match the signature of a `{Model}ForCausalLM` so that we can inherit from `GenerationMixin`
-
+    # 这个从名字上和UniVLA就没有一点关系
     # ruff: noqa: C901
     def forward(
         self,
@@ -324,7 +324,7 @@ class PrismaticVLM(VLM):
         multimodal_indices: Optional[torch.LongTensor] = None,
     ) -> CausalLMOutputWithPast:
         """Run a forward pass through the VLM, returning a CausalLMOutputWithPast instance (contains loss)."""
-
+        # 输入的都是啥
         # Handle Inference (leverage cache, short-circuit on just LLM forward)
         if input_ids.shape[1] == 1 and past_key_values is not None:
             # We're leveraging the cache, so just redirect to `self.llm_backbone` with `input_ids` and `past_key_values`
@@ -383,14 +383,14 @@ class PrismaticVLM(VLM):
             )
 
         # Get Input Embeddings from LLM Backbone :: [bsz, input_seq_len, llm_embed_dim]
-        input_embeddings = self.llm_backbone.embed_input_ids(input_ids)
+        input_embeddings = self.llm_backbone.embed_input_ids(input_ids) # 这个input_ids从ot+k获得的真值
 
-        # Build Multimodal Embeddings (and build resulting attention mask)
+        # Build Multimodal Embeddings (and build resulting attention mask) #这里是两个batch的拼接   
         multimodal_embeddings = torch.cat(
             [
-                input_embeddings[multimodal_indices, :1, :],
-                projected_patch_embeddings,
-                input_embeddings[multimodal_indices, 1:, :],
+                input_embeddings[multimodal_indices, :1, :], #Now
+                projected_patch_embeddings, #Vision
+                input_embeddings[multimodal_indices, 1:, :], #Future
             ],
             dim=1,
         )
@@ -473,7 +473,7 @@ class PrismaticVLM(VLM):
             position_ids=None,
             past_key_values=past_key_values,
             inputs_embeds=fused_embeddings,
-            labels=fused_labels,
+            labels=fused_labels, #labels还是token id，没有变化
             use_cache=use_cache,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,

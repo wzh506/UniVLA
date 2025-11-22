@@ -73,7 +73,7 @@ class TrainConfig:
     # Tracking Parameters
     trackers: Tuple[str, ...] = ("jsonl", "wandb")                  # Trackers to initialize (if W&B, add config!)
     wandb_project: str = "latent-action-pretrain"                   # Name of W&B project to log to (use default!)
-    wandb_entity: str = "opendrivelab"                              # Name of entity to log under
+    wandb_entity: str = "peking-university-electronics-of-colleage" # Name of entity to log under #没有修改就会报错
 
     def __post_init__(self) -> None:
         """Lift optimization parameters from `self.vla` for ease of use =>> validate on `expected_world_size`"""
@@ -100,6 +100,9 @@ class TrainConfig:
 
 @draccus.wrap()
 def train(cfg: TrainConfig) -> None:
+    # 我这里是单卡debug,所以添加了这个
+    import torch.distributed as dist
+    dist.init_process_group(backend="nccl", init_method="env://", world_size=1, rank=0)
     overwatch.info("OpenVLA Training :: Warming Up")
 
     # Note => Under `torchrun` initializing `overwatch` will automatically set up `torch.distributed`

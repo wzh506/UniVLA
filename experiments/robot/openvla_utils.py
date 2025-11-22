@@ -212,10 +212,10 @@ def get_vla_latent_action(vla, processor, base_vla_name, obs, task_label, unnorm
     if len(hist_action) > 0:
         prompt = f"In: What action should the robot take to {task_label.lower()}? History action {hist_action}\nOut:"
 
-    # Process inputs.
+    # Process inputs.   
     inputs = processor(prompt, image).to(vla.device, dtype=torch.bfloat16)
-
+    # 现在的inputs_ids是文本和图像拼接的，没有利用未来观测生成
     # Get latent action.
-    action = vla.predict_latent_action(**inputs, unnorm_key=unnorm_key, do_sample=True, temperature=0.75, top_p = 0.9)
+    action = vla.predict_latent_action(**inputs, unnorm_key=unnorm_key, do_sample=True, temperature=0.75, top_p=0.9)
 
     return action

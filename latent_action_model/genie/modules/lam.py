@@ -16,7 +16,7 @@ from torchvision import transforms
 IMAGENET_DEFAULT_MEAN = (0.485, 0.456, 0.406)
 IMAGENET_DEFAULT_STD = (0.229, 0.224, 0.225)
 
-
+#这个是第一阶段训练的模型
 class UncontrolledDINOLatentActionModel(nn.Module):
     """
     Latent action VQ-VAE.
@@ -167,7 +167,7 @@ class UncontrolledDINOLatentActionModel(nn.Module):
 
 
 
-
+# 这个是第二阶段训练的模型
 class ControllableDINOLatentActionModel(nn.Module):
     """
     Latent action VQ-VAE.
@@ -266,12 +266,12 @@ class ControllableDINOLatentActionModel(nn.Module):
         z_q_uncontrol, z_uncontrol, emb_uncontrol, indices_uncontrol = self.vq(z_uncontrol) #让VQ的分布更接近
         z_q_uncontrol = z_q_uncontrol.reshape(B, T - 1, self.num_codes, self.latent_dim)
 
-        # Get 'cotrollable' latent action for all future frames
+        # Get 'cotrollable' latent action for all future frames,未来的吗？
         z_action = self.to_codebook(z[:, 1:, :self.num_codes])  # (B, T-1, n, E)
 
         # Vector quantize
         z_action = z_action.reshape(B * (T - 1), self.num_codes, self.latent_dim)
-        z_q, z, emb, indices = self.vq_action(z_action)
+        z_q, z, emb, indices = self.vq_action(z_action) #采用VQ- VAE方式
         z_q = z_q.reshape(B, T - 1, self.num_codes, self.latent_dim)
 
         return {

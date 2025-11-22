@@ -235,28 +235,28 @@ class RLDSBatchTransformLatentAction:
 
     def __call__(self, rlds_batch: Dict[str, Any]) -> Dict[str, Any]:
         """Converts a RLDS batch to the format expected by the OpenVLA collator/models."""
-        dataset_name, action = rlds_batch["dataset_name"], rlds_batch["action"][0]
+        dataset_name, action = rlds_batch["dataset_name"], rlds_batch["action"][0] #为啥只搞一个
         # img = Image.fromarray(rlds_batch["observation"]["image_primary"][0])
         lang = rlds_batch["task"]["language_instruction"].decode().lower()
 
         # print(len(rlds_batch["observation"]["image_primary"]))
         img = Image.fromarray(rlds_batch["observation"]["image_primary"][0])
-        img_k = Image.fromarray(rlds_batch["observation"]["image_primary"][-1])
+        img_k = Image.fromarray(rlds_batch["observation"]["image_primary"][-1])#
         pixel_values = self.image_transform(img)
 
         with torch.no_grad():
             initial_pixel_values = self.image_transform_lam(img)
             target_pixel_values = self.image_transform_lam(img_k)
             video = torch.stack([initial_pixel_values, target_pixel_values], dim=0).unsqueeze(0).to(self.action_tokenizer.device)
-            latent_action_idx = self.action_tokenizer.vq_encode(video)['indices'].squeeze()
-
+            latent_action_idx = self.action_tokenizer.vq_encode(video)['indices'].squeeze() #共有16个好像,将图像映射到embedding
+            # 
         action_vocab = [f'<ACT_{i.item()}>' for i in latent_action_idx]   # [ACT_1, ACT_2, ... ACT_K]
 
         action_tokens = ''
         for i, action in enumerate(action_vocab):
             action_tokens += action
 
-
+        # 在重新构建prompt
         # Construct Chat-based Prompt =>> Input is default query + language instruction, output are the action tokens
         prompt_builder = self.prompt_builder_fn("openvla")
         conversation = [
@@ -265,9 +265,9 @@ class RLDSBatchTransformLatentAction:
         ]
         for turn in conversation:
             prompt_builder.add_turn(turn["from"], turn["value"])
-
+        # 在这里构建一个prompt以及tokens
         # Tokenize (w/ `base_tokenizer`)
-        input_ids = self.base_tokenizer(prompt_builder.get_prompt(), add_special_tokens=True).input_ids
+        input_ids = self.base_tokenizer(prompt_builder.get_prompt(), add_special_tokens=True).input_ids #这个在干嘛
         labels = list(input_ids)
 
         # Tensorize =>> Run Image Transform to get `pixel_values` =>> Return

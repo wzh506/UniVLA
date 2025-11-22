@@ -1,6 +1,9 @@
 1.环境配置
 安装使用环境为univla
-
+robomimic一定要使用低版本的cmake（3.24.0），否则无法安装，真的抽象
+服务器上面没有显示屏（谁家有钱人A100安显示屏），设置os.environ["MUJOCO_GL"] = "egl"
+sudo apt-get update
+sudo apt-get install libegl-dev
 
 2.数据集
 OpenX数据集很大，不可能全部下载
@@ -21,6 +24,24 @@ torchrun --standalone --nnodes 1 --nproc-per-node 8 main.py fit \
 pretraining of Generalist Policy:
 统一读取./prismatic/conf/vla.py，在train.py中有发现import
 
+
+
 下载hugging face的仓库
-huggingface-cli download qwbu/univla-latent-action-model --local-dir "/home/lucian.wang/github/UniVLA/ckpt/univla-latent-action-model"
+huggingface-cli download meta-llama/Llama-2-7b --local-dir "/home/lucian.wang/github/UniVLA/ckpt/Llama"
 TRI-ML/prismatic-vlms
+
+下载一个小的libro数据集
+huggingface-cli download qwbu/univla-7b-224-sft-libero --local-dir "/home/lucian.wang/github/UniVLA/ckpt" --include "univla-libero-10/*"
+
+evaluate:
+infer慢得简直搞笑
+pip install -r experiments/robot/libero/libero_requirements.txt
+
+# By default, we test for 50 rollouts every task, totalling 500 independent trials.
+python experiments/robot/libero/run_libero_eval.py \
+    --task_suite_name libero_10 \   # Choose from [libero_spatial, libero_object, libero_goal, libero_10] 
+    --action_decoder_path /home/lucian.wang/github/UniVLA/ckpt/univla-libero-10/action_decoder.pt \
+    --pretrained_checkpoint /home/lucian.wang/github/UniVLA/ckpt/univla-libero-10 \
+    --save_video False    # Whether to save rollout videos \
+    --num_trials_per_task 50 \
+    --seed 7

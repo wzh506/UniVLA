@@ -310,10 +310,10 @@ def eval_libero(cfg: GenerateConfig) -> None:
                     latent_action, visual_embed, generated_ids = get_latent_action(
                         cfg,
                         model,
-                        observation,
-                        task_description,
+                        observation, #观测图像，当前末端执行器（8个自由度，3+3+2）
+                        task_description, #任务描述,自然语言
                         processor=processor,
-                        hist_action=prev_hist_action[-1],
+                        hist_action=prev_hist_action[-1], #历史动作,文本
                     )
 
                     # Record history latent actions
